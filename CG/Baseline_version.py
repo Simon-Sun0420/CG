@@ -10,7 +10,7 @@ def load_image(image_path):
     return np.array(image) / 255.0
 
 
-def apply_brush_strokes(image, stroke_size=4, stroke_length=10):
+def apply_brush_strokes(image, stroke_size=4, stroke_length=12):
     # 创建空白画布
     canvas = np.zeros_like(image)
     height, width, _ = image.shape
@@ -67,24 +67,25 @@ def save_image(image, path):
 
 
 if __name__ == "__main__":
-    image_path = './input/lines.jpg'  # Replace with your image path
+    image_path = './input/Scene.jpg'  # Replace with your image path
 
     result_dir = './output'
     os.makedirs(result_dir, exist_ok=True)
 
     # 加载图像并应用笔触效果
     image = load_image(image_path)
-    brush_stroke_image = apply_brush_strokes(image, stroke_size=4, stroke_length=10)
+    brush_stroke_image = apply_brush_strokes(image, stroke_size=2, stroke_length=8)
 
     # 生成高度图和法线贴图
     height_map = generate_height_map(brush_stroke_image)
+    save_image(Image.fromarray((height_map * 255).astype(np.uint8)),
+               os.path.join(result_dir, 'baseline_height_map.png'))
     normal_map = compute_normals(height_map)
 
     # 应用光照效果
     lit_image = apply_lighting(brush_stroke_image, normal_map)
 
     # 保存结果
-    save_image(Image.fromarray((height_map * 255).astype(np.uint8)),
-               os.path.join(result_dir, 'baseline_height_map.png'))
-    save_image(Image.fromarray(normal_map), os.path.join(result_dir, 'baseline_normal_map.png'))
+
+    # save_image(Image.fromarray(normal_map), os.path.join(result_dir, 'baseline_normal_map_protrait.png'))
     save_image(lit_image, os.path.join(result_dir, 'baseline_lit_image.png'))

@@ -69,7 +69,7 @@ def save_image(image, path):
     image.save(path)
 
 
-def apply_brush_strokes(image_path, stroke_size=8, stroke_length=16):
+def apply_brush_strokes(image_path, stroke_size=4, stroke_length=12):
     # 加载图像
     image = cv2.imread(image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -111,18 +111,20 @@ def apply_style_transfer(content_image, style_image_path):
 
 
 if __name__ == "__main__":
-    image_path = './input/lines.jpg'  # Replace with your image path
-    style_image_path = './input/StarryNight.jpg'  # Replace with your style image path
+    image_path = './input/Scene.jpg'  # Replace with your image path
+    style_image_path = './input/style2.png'  # Replace with your style image path
     result_dir = './output'  # Replace with your desired output directory
     os.makedirs(result_dir, exist_ok=True)
 
     the_current_time()
 
     # 生成笔触效果图像
-    brush_stroke_image = apply_brush_strokes(image_path, stroke_size=6, stroke_length=15)
+    brush_stroke_image = apply_brush_strokes(image_path, stroke_size=2, stroke_length=8)
+
+
     save_image((brush_stroke_image).astype(np.uint8), os.path.join(result_dir, 'brush_strokes.png'))
 
-    # 直接使用生成的笔触图像进行高度图和光照处理
+    #直接使用生成的笔触图像进行高度图和光照处理
     brush_stroke_image = brush_stroke_image / 255.0
 
     # Build the simple CNN model
@@ -130,7 +132,7 @@ if __name__ == "__main__":
 
     # Generate the height map
     height_map = generate_height_map(brush_stroke_image, model)
-    save_image((height_map * 255).astype(np.uint8), os.path.join(result_dir, 'height_map.png'))
+    save_image((height_map*255).astype(np.uint8), os.path.join(result_dir, 'height_map.png'))
 
     # Apply lighting effects
     lit_image = apply_lighting(brush_stroke_image, height_map)
@@ -142,9 +144,9 @@ if __name__ == "__main__":
     save_image((enhanced_image * 255).astype(np.uint8), os.path.join(result_dir, 'improved_lit_image.png'))
 
     # Optional: Apply style transfer
-    apply_style = True  # Set to True to apply style transfer
+    apply_style = False  # Set to True to apply style transfer
     if apply_style:
         stylized_image = apply_style_transfer(enhanced_image, style_image_path)
-        save_image((stylized_image * 255).astype(np.uint8), os.path.join(result_dir, 'stylized_image.png'))
+        save_image((stylized_image * 255).astype(np.uint8), os.path.join(result_dir, 'stylized_image2.png'))
 
     the_current_time()
