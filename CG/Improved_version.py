@@ -47,12 +47,31 @@ def apply_lighting(image, height_map):
     # Convert normals to an RGB image
     normal_map = cv2.cvtColor((normals * 255).astype(np.uint8), cv2.COLOR_GRAY2RGB)
 
+    # Apply Parallax Mapping
+    parallax_height = 0.1  # Parallax height can be adjusted for more depth
+    parallax_normals = normals * parallax_height
+    parallax_image = ImageChops.offset(image, int(parallax_normals[..., 0].mean()),
+                                       int(parallax_normals[..., 1].mean()))
+
     # Combine color image and normal map using Phong shading
-    lit_image = ImageChops.multiply(image, Image.fromarray(normal_map))
+    lit_image = ImageChops.multiply(parallax_image.convert("RGB"), Image.fromarray(normal_map))
+
+    # Apply Ambient Occlusion
+    occlusion = cv2.GaussianBlur(np.array(height_map), (15, 15), 0)
+    occlusion = 1 - (occlusion / 255.0)  # Invert and normalize
+    occlusion_map = Image.fromarray((occlusion * 255).astype(np.uint8)).convert("L")
+
+    # Ensure occlusion_map is in the same size as lit_image
+    occlusion_map = occlusion_map.resize(lit_image.size, Image.BILINEAR)
+
+    # Convert occlusion_map to RGB to match lit_image mode
+    occlusion_map = occlusion_map.convert("RGB")
+
+    lit_image = ImageChops.multiply(lit_image, occlusion_map)
 
     # Adjust brightness to compensate for potential darkening
     enhancer = ImageEnhance.Brightness(lit_image)
-    lit_image = enhancer.enhance(2.0)  # Increase brightness by 50%
+    lit_image = enhancer.enhance(3.5)  # Increase brightness by 50%
     return lit_image
 
 
