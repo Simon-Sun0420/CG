@@ -1,0 +1,4 @@
+opencv-python==4.7.0.68
+Pillow==9.4.0
+tensorflow==2.16.1
+tensorflow-hub==0.16.1
