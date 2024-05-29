@@ -69,7 +69,7 @@ def save_image(image, path):
 
 
 if __name__ == "__main__":
-    image_path = './input/Scene.jpg'  # Replace with your image path
+    image_path = './input/Scene.png'  # Replace with your image path
 
     result_dir = './output'
     os.makedirs(result_dir, exist_ok=True)

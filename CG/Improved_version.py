@@ -130,7 +130,7 @@ def apply_style_transfer(content_image, style_image_path):
 
 
 if __name__ == "__main__":
-    image_path = './input/Scene.jpg'  # Replace with your image path
+    image_path = './input/Scene.png'  # Replace with your image path
     style_image_path = './input/style2.png'  # Replace with your style image path
     result_dir = './output'  # Replace with your desired output directory
     os.makedirs(result_dir, exist_ok=True)
