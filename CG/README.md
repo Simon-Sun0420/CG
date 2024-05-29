@@ -2,6 +2,8 @@
 
 This project focuses on enhancing the oil painting brushstroke effect in images using advanced image processing techniques. We provide both a baseline implementation and an improved implementation that incorporates style transfer to achieve more realistic and visually appealing results.
 
+Our official repo locates at: https://github.com/Simon-Sun0420/CG
+
 ## Project Structure
 
 - `Baseline_version.py`: Contains the baseline implementation of the oil painting brushstroke rendering.
