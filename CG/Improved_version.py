@@ -11,7 +11,7 @@ import cv2
 def the_current_time():
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(time.time()))))
 
-
+# build a simple convolutional neural network model
 def build_model():
     inputs = tf.keras.Input(shape=(None, None, 3))
     x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same')(inputs)
@@ -27,12 +27,12 @@ def load_image(image_path):
     image = np.array(image) / 255.0
     return image
 
-
+# height map generation
 def generate_height_map(image, model):
     height_map = model(image[np.newaxis, ...])[0, ..., 0].numpy()
     return height_map
 
-
+# apply advanced lighting to the image based on the height map
 def apply_lighting(image, height_map):
     image = Image.fromarray((image * 255).astype(np.uint8))
     height_map = Image.fromarray((height_map * 255).astype(np.uint8))
@@ -74,7 +74,7 @@ def apply_lighting(image, height_map):
     lit_image = enhancer.enhance(3.5)  # Increase brightness by 50%
     return lit_image
 
-
+# apply laplacian to the image to enhance the details
 def enhance_details(image):
     image = np.array(image)
     laplacian = cv2.Laplacian(image, cv2.CV_64F)
@@ -89,32 +89,32 @@ def save_image(image, path):
 
 
 def apply_brush_strokes(image_path, stroke_size=4, stroke_length=12):
-    # 加载图像
+    # load image
     image = cv2.imread(image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    # 创建空白画布
+    # create a blank canvas
     canvas = np.zeros_like(image)
 
-    # 获取图像大小
+    # get size
     height, width, _ = image.shape
 
-    # 模拟油画笔触
+    # simulate brush strokes
     for y in range(0, height, stroke_size):
         for x in range(0, width, stroke_size):
-            # 随机选择笔触方向
+            # randomize stroke length and angle
             angle = np.random.uniform(0, 2 * np.pi)
             dx = int(np.cos(angle) * stroke_length)
             dy = int(np.sin(angle) * stroke_length)
 
-            # 确保笔触在图像范围内
+            # make sure the stroke is within the image
             x1, y1 = x, y
             x2, y2 = min(width - 1, max(0, x + dx)), min(height - 1, max(0, y + dy))
 
-            # 获取颜色
+            # get color from the image
             color = image[y, x].tolist()
 
-            # 画笔触
+            # draw the stroke
             cv2.line(canvas, (x1, y1), (x2, y2), color, stroke_size)
 
     return canvas
@@ -137,18 +137,13 @@ if __name__ == "__main__":
 
     the_current_time()
 
-    # 生成笔触效果图像
+    # create the stroke image
     brush_stroke_image = apply_brush_strokes(image_path, stroke_size=2, stroke_length=8)
-
-
     save_image((brush_stroke_image).astype(np.uint8), os.path.join(result_dir, 'brush_strokes.png'))
 
-    #直接使用生成的笔触图像进行高度图和光照处理
     brush_stroke_image = brush_stroke_image / 255.0
-
     # Build the simple CNN model
     model = build_model()
-
     # Generate the height map
     height_map = generate_height_map(brush_stroke_image, model)
     save_image((height_map*255).astype(np.uint8), os.path.join(result_dir, 'height_map.png'))
@@ -158,8 +153,6 @@ if __name__ == "__main__":
 
     # Enhance image details
     enhanced_image = enhance_details(lit_image)
-
-    # Save the enhanced image
     save_image((enhanced_image * 255).astype(np.uint8), os.path.join(result_dir, 'improved_lit_image.png'))
 
     # Optional: Apply style transfer
